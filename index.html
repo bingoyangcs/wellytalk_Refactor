@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wellytalk prototype</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="agents.js" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="global-sidebar" aria-label="Product navigation">
+        <div class="global-nav-group">
+          <button class="global-nav-button global-nav-button--brand" type="button" aria-label="Wellytalk home">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 5.5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-4 3v-3.2a2 2 0 0 1-2-2V7.5a2 2 0 0 1 2-2Z" />
+              <path d="M7.5 10h1m3 0h1m3 0h1" />
+            </svg>
+          </button>
+          <div class="global-module-nav" id="global-navigation"></div>
+        </div>
+
+        <div class="global-nav-group global-nav-group--bottom">
+          <button class="workspace-avatar" type="button" aria-label="Workspace C">C</button>
+          <button
+            class="profile-button"
+            id="profile-trigger"
+            type="button"
+            aria-label="User profile"
+            aria-haspopup="menu"
+            aria-expanded="false"
+          >
+            <span class="profile-initials">BY</span>
+            <span class="status-dot" aria-label="Online"></span>
+          </button>
+        </div>
+        <div class="profile-menu" id="profile-menu" role="menu" hidden>
+          <div class="profile-menu-header">
+            <strong>Bingo Yang</strong>
+            <span>Product workspace</span>
+          </div>
+          <button type="button" role="menuitem" data-profile-action="Away mode">Away mode</button>
+          <button type="button" role="menuitem" data-profile-action="Theme">Theme</button>
+          <button type="button" role="menuitem" data-profile-action="Language">Language</button>
+          <button type="button" role="menuitem" data-profile-action="Switch CID">Switch CID</button>
+          <div class="profile-menu-divider"></div>
+          <button class="profile-menu-danger" type="button" role="menuitem" data-profile-action="Log out">Log out</button>
+          <div class="profile-feedback" id="profile-feedback" aria-live="polite"></div>
+        </div>
+      </aside>
+
+      <aside class="settings-sidebar context-sidebar" aria-label="Context navigation">
+        <h1 class="settings-title" id="context-title"></h1>
+        <nav class="settings-nav" id="context-navigation"></nav>
+      </aside>
+
+      <main class="page-content" id="page-content"></main>
+    </div>
+
+    <template id="routing-rules-template">
+      <div class="routing-rules-page">
+        <header class="page-header">
+          <div class="page-title-row">
+            <span class="page-title-icon" aria-hidden="true">
+              <svg viewBox="0 0 20 20"><path d="M2 6a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v8a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6Z" /><path d="M7 2v16" /></svg>
+            </span>
+            <h2>Routing rules</h2>
+          </div>
+          <div class="tabs" role="tablist" aria-label="Routing rule views">
+            <button class="tab is-active" type="button" role="tab" aria-selected="true">Intra-group routing rules</button>
+          </div>
+        </header>
+
+        <section class="note" aria-label="Routing rules note">
+          <strong>Note:</strong>
+          <p>
+            The system filters eligible agents from top to bottom based on the order of enabled rules. If no assignee can be
+            determined after all rules are applied, the system will distribute conversations evenly based on each agent’s current
+            conversation workload.
+          </p>
+        </section>
+
+        <section class="rule-list" aria-label="Intra-group routing rules">
+          <article class="rule-card">
+            <span class="drag-handle" aria-hidden="true"><i></i><i></i><i></i></span>
+            <div class="rule-copy">
+              <h3>Last agent</h3>
+              <p class="rule-question">Who should this visitor be routed to</p>
+              <label class="radio-option radio-option--muted">
+                <input type="radio" checked disabled />
+                <span>The last agent who wrote the last response</span>
+              </label>
+            </div>
+            <label class="switch">
+              <input type="checkbox" data-rule="lastAgent" checked />
+              <span class="switch-track" aria-hidden="true"></span>
+              <span class="sr-only">Enable Last agent routing rule</span>
+            </label>
+          </article>
+
+          <article class="rule-card">
+            <span class="drag-handle" aria-hidden="true"><i></i><i></i><i></i></span>
+            <div class="rule-copy">
+              <h3>Language Based</h3>
+              <p class="rule-question">Who should this visitor be routed to</p>
+              <label class="radio-option radio-option--muted">
+                <input type="radio" checked disabled />
+                <span>Assign the conversation to agents who support the customer’s language</span>
+              </label>
+            </div>
+            <label class="switch">
+              <input type="checkbox" data-rule="language" checked />
+              <span class="switch-track" aria-hidden="true"></span>
+              <span class="sr-only">Enable Language Based routing rule</span>
+            </label>
+          </article>
+
+          <article class="rule-card">
+            <span class="drag-handle" aria-hidden="true"><i></i><i></i><i></i></span>
+            <div class="rule-copy">
+              <h3>Skill based</h3>
+              <p class="rule-question">Who should this visitor be routed to</p>
+              <label class="radio-option radio-option--muted">
+                <input type="radio" checked disabled />
+                <span>An agent who has been identified as proficient in answering the visitor's frequently asked questions</span>
+              </label>
+            </div>
+            <label class="switch">
+              <input type="checkbox" data-rule="skill" checked />
+              <span class="switch-track" aria-hidden="true"></span>
+              <span class="sr-only">Enable Skill based routing rule</span>
+            </label>
+          </article>
+
+          <article class="rule-card rule-card--load">
+            <span class="drag-handle" aria-hidden="true"><i></i><i></i><i></i></span>
+            <div class="rule-copy">
+              <h3>Load based</h3>
+              <p class="rule-question">Who should this visitor be routed to</p>
+              <label class="radio-option">
+                <input type="radio" name="load-strategy" value="current" checked />
+                <span>The agents with the fewest active conversations based on the current chat load</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="load-strategy" value="last24Hours" />
+                <span>The agents with the fewest active conversations based on the last 24 hours</span>
+              </label>
+            </div>
+            <label class="switch">
+              <input type="checkbox" data-rule="load" checked />
+              <span class="switch-track" aria-hidden="true"></span>
+              <span class="sr-only">Enable Load based routing rule</span>
+            </label>
+          </article>
+        </section>
+      </div>
+    </template>
+  </body>
+</html>
