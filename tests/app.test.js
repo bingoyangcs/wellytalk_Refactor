@@ -7,6 +7,7 @@ const {
   getViewType,
   toggleRule,
   selectLoadRule,
+  toggleAccordionGroup,
 } = require("../app.js");
 
 test("toggleRule flips only the requested rule", () => {
@@ -30,6 +31,24 @@ test("toggleRule leaves state unchanged for an unknown rule", () => {
   const state = { lastAgent: true };
 
   assert.deepEqual(toggleRule(state, "missing"), state);
+});
+
+test("toggleAccordionGroup keeps only one sibling menu expanded", () => {
+  const expanded = new Set(["settings-inbox", "reports-group"]);
+
+  assert.deepEqual(
+    [...toggleAccordionGroup(expanded, "automation", ["team", "channels", "automation", "settings-inbox", "personal"])],
+    ["reports-group", "automation"],
+  );
+});
+
+test("toggleAccordionGroup collapses the selected menu when clicked again", () => {
+  const expanded = new Set(["automation"]);
+
+  assert.deepEqual(
+    [...toggleAccordionGroup(expanded, "automation", ["team", "automation", "settings-inbox"])],
+    [],
+  );
 });
 
 test("menu configuration exposes the five Wellytalk modules", () => {

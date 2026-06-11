@@ -201,6 +201,16 @@ function selectLoadRule(state, loadStrategy) {
   return { ...state, loadStrategy };
 }
 
+function toggleAccordionGroup(expandedGroups, groupId, siblingIds) {
+  const next = new Set(expandedGroups);
+  const isExpanded = next.has(groupId);
+
+  siblingIds.forEach((id) => next.delete(id));
+  if (!isExpanded) next.add(groupId);
+
+  return next;
+}
+
 const ICONS = {
   inbox: '<path d="M4 5h12v9H4z"/><path d="M4 10h3l2 2h2l2-2h3"/>',
   knowledge: '<path d="M3 4.5A3.5 3.5 0 0 1 6.5 1H10v15H6.5A3.5 3.5 0 0 0 3 19V4.5Z"/><path d="M17 4.5A3.5 3.5 0 0 0 13.5 1H10v15h3.5A3.5 3.5 0 0 1 17 19V4.5Z"/>',
@@ -282,6 +292,7 @@ function initializePrototype() {
   };
 
   function expandPath(path) {
+    state.expandedGroups.clear();
     path.slice(0, -1).forEach((id) => state.expandedGroups.add(id));
   }
 
@@ -336,15 +347,18 @@ function initializePrototype() {
 
       if (hasChildren) {
         const isExpanded = state.expandedGroups.has(item.id);
+        const siblingGroupIds = items
+          .filter((candidate) => candidate.children && candidate.children.length)
+          .map((candidate) => candidate.id);
         button.classList.add("context-nav-group");
         button.setAttribute("aria-expanded", String(isExpanded));
         button.innerHTML = `${depth === 0 ? iconMarkup(item.icon) : '<span class="context-node-dot"></span>'}<span class="context-label">${item.label}</span><svg class="chevron${isExpanded ? " chevron--down" : ""}" viewBox="0 0 20 20" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg>`;
         button.addEventListener("click", () => {
-          if (isExpanded) {
-            state.expandedGroups.delete(item.id);
-          } else {
-            state.expandedGroups.add(item.id);
-          }
+          state.expandedGroups = toggleAccordionGroup(
+            state.expandedGroups,
+            item.id,
+            siblingGroupIds,
+          );
           renderContextNavigation();
         });
       } else {
@@ -484,5 +498,6 @@ if (typeof module !== "undefined") {
     getViewType,
     toggleRule,
     selectLoadRule,
+    toggleAccordionGroup,
   };
 }
